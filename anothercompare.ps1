@@ -1,14 +1,24 @@
-﻿$SourceDocs = Get-ChildItem –Path D:\test1 | where-object {$_.Extension -ne ".config"} | foreach  {Get-FileHash –Path $_.FullName}
-$DestDocs = Get-ChildItem –Path D:\test2 | where-object {$_.Extension -ne ".config"} | foreach  {Get-FileHash –Path $_.FullName}
-(Compare-Object -ReferenceObject $SourceDocs -DifferenceObject $DestDocs  -Property hash -PassThru).Path 
-foreach ($file in $SourceDocs) {
-    Write-Host
-    Write-Host File Name: -ForegroundColor DarkYellow
-    Write-Host $file.Name
-    Write-Host File Path: -ForegroundColor DarkYellow
-    Write-Host $file.FullName
+﻿Import-Module activedirectory
+$computers = Get-ADComputers -Filter {(Get-WmiObject Win32_OperatingSystem).Name -like "*Windows Server*"}
+foreach ($computer in $computers){
+	$1 = "\\" + "$_.Name" + "\erecruit\erecruitservices"
+	$2 = "\\" + "$_.Name" + "\erecruit\ServiceBus"
+	$3 = "\\" + "$_.Name" + "\erecruit\srch1"
+	$4 = "\\" + "$_.Name" + "\erecruit\dispatch"
+	if ($computer.Name -like "*BE*"){
+	 robocopy C:\erecruit D:\erecruitservices /MIR /PURGE /E /V /xf *.config *.odt *.pdf /xd AppData $3 $2 Logs
+	}
 
-    $SourceDocs = $file.FullName
-    $DestDocs = "D:\test2\$($file.Name)"
-    Copy-Item $SourceDocs $SourceDocs
-}
+	elseif ($computer.Name -like "*WEB*"){
+		robocopy C:\erecruit D:\erecruitservices /MIR /PURGE /E /V /xf *.config *.odt *.pdf /xd AppData $1 $4 Logs
+		}
+
+
+
+
+
+
+
+
+
+	}
