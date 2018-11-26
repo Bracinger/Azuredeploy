@@ -1,0 +1,1 @@
+﻿robocopy C:\tfold D:\tfold /MIR /E /V /xf conf.config /xd AppData
